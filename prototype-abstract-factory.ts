@@ -1,8 +1,14 @@
-export abstract class AbstractProductA {
-  abstract foo(): void;
+export interface Prototype {
+  clone(): this;
 }
-export abstract class AbstractProductB {
+
+export abstract class AbstractProductA implements Prototype {
+  abstract foo(): void;
+  abstract clone(): this;
+}
+export abstract class AbstractProductB implements Prototype {
   abstract bar(): void;
+  abstract clone(): this;
 }
 
 export abstract class AbstractFactory {
@@ -12,29 +18,46 @@ export abstract class AbstractFactory {
 
 export class ProductA1 extends AbstractProductA {
   override foo(): void {}
+  override clone(): this {
+    return Object.create(this);
+  }
 }
 export class ProductB1 extends AbstractProductB {
   override bar(): void {}
+  override clone(): this {
+    return Object.create(this);
+  }
 }
 
 export class ConcreteFactory1 extends AbstractFactory {
-  protected constructor() {
+  protected prototypeA: AbstractProductA;
+  protected prototypeB: AbstractProductB;
+
+  protected constructor(
+    prototypeA: AbstractProductA,
+    prototypeB: AbstractProductB
+  ) {
     super();
+    this.prototypeA = prototypeA;
+    this.prototypeB = prototypeB;
   }
 
   override createProductA(): AbstractProductA {
-    return new ProductA1();
+    return this.prototypeA.clone();
   }
 
   override createProductB(): AbstractProductB {
-    return new ProductB1();
+    return this.prototypeB.clone();
   }
 
   protected static instance: ConcreteFactory1 | undefined;
 
   static Instance(): ConcreteFactory1 {
     if (!ConcreteFactory1.instance) {
-      ConcreteFactory1.instance = new ConcreteFactory1();
+      ConcreteFactory1.instance = new ConcreteFactory1(
+        new ProductA1(),
+        new ProductB1()
+      );
     }
     return ConcreteFactory1.instance;
   }
@@ -42,28 +65,46 @@ export class ConcreteFactory1 extends AbstractFactory {
 
 export class ProductA2 extends AbstractProductA {
   override foo(): void {}
+  override clone(): this {
+    return Object.create(this);
+  }
 }
 export class ProductB2 extends AbstractProductB {
   override bar(): void {}
+  override clone(): this {
+    return Object.create(this);
+  }
 }
 
 export class ConcreteFactory2 extends AbstractFactory {
-  protected constructor() {
+  protected prototypeA: AbstractProductA;
+  protected prototypeB: AbstractProductB;
+
+  protected constructor(
+    prototypeA: AbstractProductA,
+    prototypeB: AbstractProductB
+  ) {
     super();
+    this.prototypeA = prototypeA;
+    this.prototypeB = prototypeB;
   }
+
   override createProductA(): AbstractProductA {
-    return new ProductA2();
+    return this.prototypeA.clone();
   }
 
   override createProductB(): AbstractProductB {
-    return new ProductB2();
+    return this.prototypeB.clone();
   }
 
   protected static instance: ConcreteFactory2 | undefined;
 
   static Instance(): ConcreteFactory2 {
     if (!ConcreteFactory2.instance) {
-      ConcreteFactory2.instance = new ConcreteFactory2();
+      ConcreteFactory2.instance = new ConcreteFactory2(
+        new ProductA2(),
+        new ProductB2()
+      );
     }
     return ConcreteFactory2.instance;
   }
